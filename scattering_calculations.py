@@ -142,6 +142,12 @@ def calculate_matrix(beta, L, Z0):
 
 
 
+import logging
+import numpy as np
+
+# Setup logging
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
 def calculate_scattering_parameters(TL, Z0):
     """
     Calculate S11 and S21 scattering parameters from transmission matrix.
@@ -154,29 +160,39 @@ def calculate_scattering_parameters(TL, Z0):
     - tuple: S11 and S21 scattering parameters.
     """
     try:
+        # Check if Z0 is zero to avoid division by zero
+        if Z0 == 0:
+            logging.debug(f"Z0 is zero, raising ZeroDivisionError")
+            raise ZeroDivisionError("Z0 cannot be zero.")
+        elif Z0 < 0:
+            raise ValueError("negative Z0")
         # Log the input values
-        logging.debug(f"Calculating scattering parameters with Z0={Z0} and TL={TL}")
+        logging.info(f"Calculating scattering parameters with Z0={Z0} and TL={TL}")
 
         # Calculate numerator and denominator for S11 and S21
         numerator_S11 = TL[0, 0] + TL[0, 1] / Z0 - TL[1, 0] * Z0 - TL[1, 1]
         denominator_S11_S21 = TL[0, 0] + TL[0, 1] / Z0 + TL[1, 0] * Z0 + TL[1, 1]
 
-        # Log intermediate values
-        logging.debug(f"Numerator for S11: {numerator_S11}")
-        logging.debug(f"Denominator for S11 and S21: {denominator_S11_S21}")
 
         # Calculate S11 and S21
         S11 = numerator_S11 / denominator_S11_S21
         S21 = 2 / denominator_S11_S21
 
         # Log the final results
-        logging.debug(f"S11: {S11}, S21: {S21}")
-        
+        logging.info(f"S11: {S11}, S21: {S21}")
+
         return S11, S21
 
-    except Exception as e:
+    except ZeroDivisionError as e:
         logging.error(f"Error calculating scattering parameters: {e}")
         return None, None
+    except ValueError as e:
+        logging.error(f"Error calculating scattering parameters: {e}")
+        return None, None
+    except Exception as e:
+        logging.error(f"Unexpected error calculating scattering parameters: {e}")
+        return None, None
+
 
 
 
