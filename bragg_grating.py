@@ -151,6 +151,11 @@ def main():
 
     logging.info("\n Bragg Grating S parameters calculated and plotted.")
 
+    TL = np.array([[1+1j, 0], [0, 1+1j]])
+    Z0 = 200
+    S11, S21 = SC.calculate_scattering_parameters(TL, Z0)
+    print(S11, S21)
+
 
 if __name__ == '__main__':
     main()
